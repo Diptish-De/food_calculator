@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
+import '../models/food_item.dart';
 import '../utils/app_theme.dart';
 
 class ManageFoodScreen extends StatefulWidget {
@@ -101,10 +102,13 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_nameController.text.isNotEmpty && _priceController.text.isNotEmpty) {
-                            provider.addNewFoodItem(
-                              _nameController.text,
-                              double.parse(_priceController.text),
-                              _selectedIcon,
+                            provider.addFoodItem(
+                              FoodItem(
+                                name: _nameController.text,
+                                price: double.parse(_priceController.text),
+                                icon: _selectedIcon,
+                                category: 'Custom',
+                              ),
                             );
                             _nameController.clear();
                             _priceController.clear();

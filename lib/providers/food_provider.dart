@@ -96,9 +96,30 @@ class FoodProvider with ChangeNotifier {
     await loadInitialData();
   }
 
-  Future<void> addNewFoodItem(String name, double price, String icon) async {
-    final item = FoodItem(name: name, category: 'Custom', price: price, icon: icon);
-    await _dbHelper.addFoodItem(item);
+  Future<void> addFoodItem(FoodItem item) async {
+    if (kIsWeb) {
+      final newItem = FoodItem(
+        id: _foodItems.length + 1,
+        name: item.name,
+        category: item.category,
+        price: item.price,
+        icon: item.icon,
+      );
+      _foodItems.add(newItem);
+      notifyListeners();
+      return;
+    }
+    await _dbHelper.insertFoodItem(item);
+    await loadInitialData();
+  }
+
+  Future<void> deleteFoodItem(int id) async {
+    if (kIsWeb) {
+      _foodItems.removeWhere((item) => item.id == id);
+      notifyListeners();
+      return;
+    }
+    await _dbHelper.deleteFoodItem(id);
     await loadInitialData();
   }
 
