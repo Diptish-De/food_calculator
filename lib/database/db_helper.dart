@@ -175,4 +175,13 @@ class DBHelper {
       whereArgs: [item.id],
     );
   }
+
+  Future<int> deleteFoodItem(int id) async {
+    Database db = await database;
+    return await db.delete(
+      'food_items',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
