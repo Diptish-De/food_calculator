@@ -1,0 +1,168 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
+import '../models/food_item.dart';
+import '../models/meal_session.dart';
+
+class DBHelper {
+  static final DBHelper _instance = DBHelper._internal();
+  static Database? _database;
+
+  factory DBHelper() => _instance;
+
+  DBHelper._internal();
+
+  Future<Database> get database async {
+    if (kIsWeb) throw Exception("Database not supported on Web");
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    String path = join(await getDatabasesPath(), 'food_calculator.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE food_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        price REAL NOT NULL,
+        icon TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE meal_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp TEXT NOT NULL,
+        total_cost REAL NOT NULL,
+        note TEXT,
+        is_paid INTEGER DEFAULT 0
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE session_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id INTEGER NOT NULL,
+        food_item_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        price_at_time REAL NOT NULL,
+        FOREIGN KEY (session_id) REFERENCES meal_sessions (id) ON DELETE CASCADE,
+        FOREIGN KEY (food_item_id) REFERENCES food_items (id)
+      )
+    ''');
+
+    // Insert initial common food items
+    await _insertInitialData(db);
+  }
+
+  Future<void> _insertInitialData(Database db) async {
+    List<FoodItem> initialItems = [
+      FoodItem(name: 'Ruti', category: 'Main', price: 5.0, icon: 'bread'),
+      FoodItem(name: 'Dim Jhol', category: 'Curry', price: 15.0, icon: 'egg'),
+      FoodItem(name: 'Alu Dum', category: 'Curry', price: 10.0, icon: 'potato'),
+      FoodItem(name: 'Tarkari', category: 'Curry', price: 10.0, icon: 'vegetable'),
+      FoodItem(name: 'Cha', category: 'Drink', price: 7.0, icon: 'coffee'),
+    ];
+
+    for (var item in initialItems) {
+      await db.insert('food_items', item.toMap());
+    }
+  }
+
+  // Generic CRUD operations can be added here as needed
+  Future<List<Map<String, dynamic>>> getFoodItems() async {
+    Database db = await database;
+    return await db.query('food_items');
+  }
+
+  Future<int> insertSession(MealSession session, List<SessionItem> items) async {
+    Database db = await database;
+    return await db.transaction((txn) async {
+      int sessionId = await txn.insert('meal_sessions', session.toMap());
+      for (var item in items) {
+        await txn.insert('session_items', {
+          'session_id': sessionId,
+          'food_item_id': item.foodItemId,
+          'quantity': item.quantity,
+          'price_at_time': item.priceAtTime,
+        });
+      }
+      return sessionId;
+    });
+  }
+
+  Future<void> updateSession(int sessionId, double additionalCost, List<SessionItem> newItems) async {
+    Database db = await database;
+    await db.transaction((txn) async {
+      // Update total cost
+      await txn.rawUpdate(
+        'UPDATE meal_sessions SET total_cost = total_cost + ? WHERE id = ?',
+        [additionalCost, sessionId]
+      );
+      
+      // Update items (if same food exists, increase quantity, else insert)
+      for (var item in newItems) {
+        final existing = await txn.query('session_items', 
+          where: 'session_id = ? AND food_item_id = ?', 
+          whereArgs: [sessionId, item.foodItemId]);
+        
+        if (existing.isNotEmpty) {
+          await txn.rawUpdate(
+            'UPDATE session_items SET quantity = quantity + ? WHERE id = ?',
+            [item.quantity, existing.first['id']]
+          );
+        } else {
+          await txn.insert('session_items', {
+            'session_id': sessionId,
+            'food_item_id': item.foodItemId,
+            'quantity': item.quantity,
+            'price_at_time': item.priceAtTime,
+          });
+        }
+      }
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getSessions() async {
+    Database db = await database;
+    return await db.rawQuery('''
+      SELECT ms.*, 
+      (SELECT GROUP_CONCAT(fi.name || ' x' || si.quantity, ', ') 
+       FROM session_items si 
+       JOIN food_items fi ON si.food_item_id = fi.id 
+       WHERE si.session_id = ms.id) as item_summary
+      FROM meal_sessions ms 
+      ORDER BY ms.timestamp DESC
+    ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getSessionItems(int sessionId) async {
+    Database db = await database;
+    return await db.rawQuery('''
+      SELECT si.*, fi.name as food_name 
+      FROM session_items si 
+      JOIN food_items fi ON si.food_item_id = fi.id 
+      WHERE si.session_id = ?
+    ''', [sessionId]);
+  }
+
+  Future<void> markAllAsPaid() async {
+    Database db = await database;
+    await db.update('meal_sessions', {'is_paid': 1}, where: 'is_paid = 0');
+  }
+
+  Future<void> addFoodItem(FoodItem item) async {
+    Database db = await database;
+    await db.insert('food_items', item.toMap());
+  }
+}
