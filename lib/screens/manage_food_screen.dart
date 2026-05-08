@@ -48,7 +48,10 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                       ),
                       title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text('₹${item.price.toInt()}'),
-                      trailing: const Icon(Icons.edit_outlined, size: 20),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 20),
+                        onPressed: () => _showEditDialog(provider, item),
+                      ),
                     );
                   },
                 ),
@@ -129,6 +132,76 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  void _showEditDialog(FoodProvider provider, FoodItem item) {
+    final nameCtrl = TextEditingController(text: item.name);
+    final priceCtrl = TextEditingController(text: item.price.toInt().toString());
+    String selectedIcon = item.icon;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Edit Food Item'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: priceCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Price (₹)'),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: _icons.map((i) => GestureDetector(
+                    onTap: () => setDialogState(() => selectedIcon = i['name']),
+                    child: CircleAvatar(
+                      backgroundColor: selectedIcon == i['name'] ? AppTheme.primaryColor : AppTheme.backgroundColor,
+                      child: Icon(i['icon'], color: selectedIcon == i['name'] ? Colors.white : AppTheme.textSecondary, size: 20),
+                    ),
+                  )).toList(),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                provider.deleteFoodItem(item.id!);
+                Navigator.pop(context);
+              },
+              child: const Text('DELETE', style: TextStyle(color: AppTheme.errorColor)),
+            ),
+            const Spacer(),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+            ElevatedButton(
+              onPressed: () {
+                if (nameCtrl.text.isNotEmpty && priceCtrl.text.isNotEmpty) {
+                  provider.updateFoodItem(FoodItem(
+                    id: item.id,
+                    name: nameCtrl.text,
+                    price: double.parse(priceCtrl.text),
+                    icon: selectedIcon,
+                    category: item.category,
+                  ));
+                  Navigator.pop(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+              child: const Text('SAVE', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }

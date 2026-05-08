@@ -113,6 +113,19 @@ class FoodProvider with ChangeNotifier {
     await loadInitialData();
   }
 
+  Future<void> updateFoodItem(FoodItem item) async {
+    if (kIsWeb) {
+      final index = _foodItems.indexWhere((f) => f.id == item.id);
+      if (index != -1) {
+        _foodItems[index] = item;
+        notifyListeners();
+      }
+      return;
+    }
+    await _dbHelper.updateFoodItem(item);
+    await loadInitialData();
+  }
+
   Future<void> deleteFoodItem(int id) async {
     if (kIsWeb) {
       _foodItems.removeWhere((item) => item.id == id);

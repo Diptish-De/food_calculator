@@ -161,8 +161,18 @@ class DBHelper {
     await db.update('meal_sessions', {'is_paid': 1}, where: 'is_paid = 0');
   }
 
-  Future<void> addFoodItem(FoodItem item) async {
+  Future<int> insertFoodItem(FoodItem item) async {
     Database db = await database;
-    await db.insert('food_items', item.toMap());
+    return await db.insert('food_items', item.toMap());
+  }
+
+  Future<int> updateFoodItem(FoodItem item) async {
+    Database db = await database;
+    return await db.update(
+      'food_items',
+      item.toMap(),
+      where: 'id = ?',
+      whereArgs: [item.id],
+    );
   }
 }
