@@ -58,14 +58,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
-                                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hostel ID: DIPTISH-2024'))),
+                                onPressed: _showAccountSummary,
                               ),
                               Text('Food Tracker', style: AppTheme.lightTheme.appBarTheme.titleTextStyle),
                               IconButton(
                                 icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
                                 onPressed: () {
-                                  final summary = provider.todayTotal > 0 ? 'Today\'s Spend: ₹${provider.todayTotal.toInt()}' : 'No meals logged today yet!';
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(summary)));
+                                  final hasDues = provider.dueTotal > 0;
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    backgroundColor: hasDues ? AppTheme.errorColor : AppTheme.primaryColor,
+                                    content: Text(hasDues ? '⚠️ Reminder: You have ₹${provider.dueTotal.toInt()} in unpaid dues!' : '🎉 All clear! You have no unpaid dues.'),
+                                  ));
                                 },
                               ),
                             ],
@@ -73,20 +76,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 30),
                           _buildCircularProgress(provider),
                           const SizedBox(height: 30),
-                          Row(
-                            children: [
-                              _buildStatItem('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
-                              _buildStatItem('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: true),
-                              GestureDetector(
-                                onTap: () => _showBudgetDialog(context, provider),
-                                child: _buildStatItem(
-                                  'Budget', 
-                                  '₹${provider.budgetRemaining.toInt()}', 
-                                  'Left', 
-                                  isWarning: provider.budgetRemaining < 500
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              children: [
+                                _buildStatItem('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
+                                _buildStatItem('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: provider.dueTotal > 0),
+                                GestureDetector(
+                                  onTap: () => _showBudgetDialog(context, provider),
+                                  child: _buildStatItem(
+                                    'Budget', 
+                                    '₹${provider.budgetRemaining.toInt()}', 
+                                    'Left', 
+                                    isWarning: provider.budgetRemaining < 500
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -332,14 +338,66 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showAccountSummary() {
+    final provider = context.read<FoodProvider>();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Account Summary'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _summaryRow('Total Logs', '${provider.sessions.length} meals'),
+            _summaryRow('Monthly Spend', '₹${provider.monthTotal.toInt()}'),
+            _summaryRow('Current Dues', '₹${provider.dueTotal.toInt()}'),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CLOSE')),
+        ],
+      ),
+    );
+  }
+
+  void _showPopularMeals() {
+    final provider = context.read<FoodProvider>();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Your Favorites'),
+        content: const Text('Coming Soon: A list of your most logged food items to help you track your diet habits!'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('COOL')),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryDark)),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatItem(String label, String value, String sub, {bool isWarning = false}) {
     return Expanded(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          const SizedBox(height: 6),
           Text(value, style: TextStyle(color: isWarning ? AppTheme.warningColor : Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-          Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+          const SizedBox(height: 2),
+          Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 9, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -355,10 +413,10 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.book_outlined), 
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Menu Guide: Track Daily Ruti & Curry prices easily.'))),
+              icon: const Icon(Icons.bar_chart_rounded), 
+              onPressed: _showPopularMeals,
             ),
-            IconButton(icon: const Icon(Icons.history), onPressed: () {
+            IconButton(icon: const Icon(Icons.history_rounded), onPressed: () {
                Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
             }),
             const SizedBox(width: 40), // Space for FAB
