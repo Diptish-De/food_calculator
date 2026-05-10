@@ -16,16 +16,7 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
   final _priceController = TextEditingController();
   String _selectedIcon = 'fastfood';
 
-  final List<Map<String, dynamic>> _icons = [
-    {'name': 'rice', 'icon': Icons.rice_bowl_rounded},
-    {'name': 'bread', 'icon': Icons.bakery_dining_rounded},
-    {'name': 'egg', 'icon': Icons.egg_rounded},
-    {'name': 'potato', 'icon': Icons.grass_rounded},
-    {'name': 'vegetable', 'icon': Icons.set_meal_rounded},
-    {'name': 'fish', 'icon': Icons.phishing_rounded},
-    {'name': 'coffee', 'icon': Icons.coffee_rounded},
-    {'name': 'fastfood', 'icon': Icons.fastfood_rounded},
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +35,6 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                   itemBuilder: (context, index) {
                     final item = provider.foodItems[index];
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                        child: Icon(_getIcon(item.icon), color: AppTheme.primaryColor),
-                      ),
                       title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text('₹${item.price.toInt()}'),
                       trailing: IconButton(
@@ -91,16 +78,7 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: _icons.map((i) => GestureDetector(
-                        onTap: () => setState(() => _selectedIcon = i['name']),
-                        child: CircleAvatar(
-                          backgroundColor: _selectedIcon == i['name'] ? AppTheme.primaryColor : AppTheme.backgroundColor,
-                          child: Icon(i['icon'], color: _selectedIcon == i['name'] ? Colors.white : AppTheme.textSecondary),
-                        ),
-                      )).toList(),
-                    ),
+
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
@@ -163,16 +141,7 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                   decoration: const InputDecoration(labelText: 'Price (₹)'),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: _icons.map((i) => GestureDetector(
-                    onTap: () => setDialogState(() => selectedIcon = i['name']),
-                    child: CircleAvatar(
-                      backgroundColor: selectedIcon == i['name'] ? AppTheme.primaryColor : AppTheme.backgroundColor,
-                      child: Icon(i['icon'], color: selectedIcon == i['name'] ? Colors.white : AppTheme.textSecondary, size: 20),
-                    ),
-                  )).toList(),
-                ),
+
               ],
             ),
           ),
@@ -208,16 +177,5 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
     );
   }
 
-  IconData _getIcon(String iconName) {
-    switch (iconName) {
-      case 'bread': return Icons.bakery_dining_rounded;
-      case 'egg': return Icons.egg_rounded;
-      case 'potato': return Icons.grass_rounded;
-      case 'vegetable': return Icons.set_meal_rounded;
-      case 'coffee': return Icons.coffee_rounded;
-      case 'rice': return Icons.rice_bowl_rounded;
-      case 'fish': return Icons.phishing_rounded;
-      default: return Icons.fastfood_rounded;
-    }
-  }
+
 }

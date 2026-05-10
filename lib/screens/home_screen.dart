@@ -520,8 +520,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(_getIcon(item.icon), color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary, size: 24),
-            const SizedBox(height: 6),
             Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isSelected ? AppTheme.primaryDark : AppTheme.textPrimary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
             Text('₹${item.price.toInt()}', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
             if (isSelected && !isDragging) ...[
@@ -662,16 +660,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  IconData _getIcon(String iconName) {
-    switch (iconName) {
-      case 'bread': return Icons.bakery_dining_rounded;
-      case 'egg': return Icons.egg_rounded;
-      case 'potato': return Icons.grass_rounded;
-      case 'vegetable': return Icons.set_meal_rounded;
-      case 'coffee': return Icons.coffee_rounded;
-      case 'rice': return Icons.rice_bowl_rounded;
-      case 'fish': return Icons.phishing_rounded;
-      default: return Icons.fastfood_rounded;
-    }
-  }
 }
