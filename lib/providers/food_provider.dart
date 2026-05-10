@@ -219,6 +219,12 @@ class FoodProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void reorderFoodItems(int oldIndex, int newIndex) {
+    final item = _foodItems.removeAt(oldIndex);
+    _foodItems.insert(newIndex, item);
+    notifyListeners();
+  }
+
   Map<String, int> getTopItems() {
     final Map<String, int> counts = {};
     for (var session in _sessions) {

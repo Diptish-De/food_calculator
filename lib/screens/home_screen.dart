@@ -211,82 +211,57 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        childAspectRatio: 0.75,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
+                        itemCount: provider.foodItems.length,
+                        itemBuilder: (context, index) {
                           final item = provider.foodItems[index];
-                          final qty = provider.cart[item.id] ?? 0;
-                          final isSelected = qty > 0;
-
-                          return GestureDetector(
-                            onTap: () {
-                              _vibrate();
-                              provider.addToCart(item.id!);
+                          return DragTarget<int>(
+                            onWillAcceptWithDetails: (details) => details.data != index,
+                            onAcceptWithDetails: (details) {
+                              provider.reorderFoodItems(details.data, index);
                             },
-                            onLongPress: () {
-                              if (qty > 0) {
-                                _vibrate();
-                                provider.removeFromCart(item.id!);
-                              }
+                            builder: (context, candidateData, rejectedData) {
+                              final isDropTarget = candidateData.isNotEmpty;
+                              return LongPressDraggable<int>(
+                                data: index,
+                                delay: const Duration(milliseconds: 200),
+                                feedback: SizedBox(
+                                  width: 90,
+                                  height: 120,
+                                  child: Material(
+                                    elevation: 12,
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: _buildFoodCard(provider, item, isDragging: true),
+                                  ),
+                                ),
+                                childWhenDragging: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.backgroundColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3), width: 2, style: BorderStyle.solid),
+                                  ),
+                                ),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  transform: isDropTarget ? (Matrix4.identity()..scale(1.05)) : Matrix4.identity(),
+                                  transformAlignment: Alignment.center,
+                                  child: _buildFoodCard(provider, item, isDropTarget: isDropTarget),
+                                ),
+                              );
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))
-                                ],
-                                border: Border.all(color: isSelected ? AppTheme.primaryColor : Colors.transparent, width: 2),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(_getIcon(item.icon), color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary, size: 24),
-                                  const SizedBox(height: 8),
-                                  Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSelected ? AppTheme.primaryDark : AppTheme.textPrimary)),
-                                  Text('₹${item.price.toInt()}', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
-                                  if (isSelected) ...[
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () => provider.removeFromCart(item.id!),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), shape: BoxShape.circle),
-                                            child: const Icon(Icons.remove, size: 14, color: AppTheme.primaryColor),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          child: Text('$qty', style: const TextStyle(fontWeight: FontWeight.w900, color: AppTheme.primaryColor, fontSize: 14)),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => provider.addToCart(item.id!),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(color: AppTheme.primaryColor, shape: BoxShape.circle),
-                                            child: const Icon(Icons.add, size: 14, color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ).animate().fadeIn(delay: (index * 20).ms);
+                          );
                         },
-                        childCount: provider.foodItems.length,
                       ),
                     ),
                   ),
@@ -512,6 +487,68 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryDark)),
         ],
+      ),
+    );
+  }
+  Widget _buildFoodCard(FoodProvider provider, dynamic item, {bool isDragging = false, bool isDropTarget = false}) {
+    final qty = provider.cart[item.id] ?? 0;
+    final isSelected = qty > 0;
+
+    return GestureDetector(
+      onTap: isDragging ? null : () {
+        _vibrate();
+        provider.addToCart(item.id!);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+          color: isDropTarget ? AppTheme.primaryColor.withOpacity(0.08) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(isDragging ? 0.1 : 0.03), blurRadius: isDragging ? 16 : 10, offset: const Offset(0, 4))
+          ],
+          border: Border.all(
+            color: isDropTarget ? AppTheme.primaryColor : (isSelected ? AppTheme.primaryColor : Colors.transparent), 
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(_getIcon(item.icon), color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary, size: 24),
+            const SizedBox(height: 6),
+            Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isSelected ? AppTheme.primaryDark : AppTheme.textPrimary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text('₹${item.price.toInt()}', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+            if (isSelected && !isDragging) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => provider.removeFromCart(item.id!),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), shape: BoxShape.circle),
+                      child: const Icon(Icons.remove, size: 12, color: AppTheme.primaryColor),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text('$qty', style: const TextStyle(fontWeight: FontWeight.w900, color: AppTheme.primaryColor, fontSize: 13)),
+                  ),
+                  GestureDetector(
+                    onTap: () => provider.addToCart(item.id!),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(color: AppTheme.primaryColor, shape: BoxShape.circle),
+                      child: const Icon(Icons.add, size: 12, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
