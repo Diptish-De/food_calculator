@@ -18,7 +18,9 @@ class NotificationService {
     
     const settings = InitializationSettings(android: androidSettings);
 
-    await _notifications.initialize(settings);
+    await _notifications.initialize(
+      initializationSettings: settings,
+    );
 
     // Request Android 13+ notification permission
     await _notifications
@@ -77,11 +79,11 @@ class NotificationService {
     }
 
     await _notifications.zonedSchedule(
-      id,
-      title,
-      body,
-      scheduledDate,
-      const NotificationDetails(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'food_reminder_channel',
           'Food Payment Reminders',
