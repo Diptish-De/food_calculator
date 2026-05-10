@@ -163,17 +163,6 @@ class DBHelper {
     await db.update('meal_sessions', {'is_paid': 1, 'paid_on': now}, where: 'is_paid = 0');
   }
 
-  Future<void> markAsPaidUpToDate(DateTime date) async {
-    Database db = await database;
-    String dateStr = date.toIso8601String();
-    String now = DateTime.now().toIso8601String();
-    await db.update(
-      'meal_sessions', 
-      {'is_paid': 1, 'paid_on': now}, 
-      where: 'is_paid = 0 AND timestamp <= ?', 
-      whereArgs: [dateStr]
-    );
-  }
   Future<int> insertFoodItem(FoodItem item) async {
     Database db = await database;
     return await db.insert('food_items', item.toMap());
