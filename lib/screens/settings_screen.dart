@@ -19,6 +19,14 @@ class SettingsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              _buildSection('Profile'),
+              _buildSettingTile(
+                icon: Icons.person_outline_rounded,
+                title: 'Your Name',
+                subtitle: provider.userName,
+                onTap: () => _showNameDialog(context, provider),
+              ),
+              const SizedBox(height: 16),
               _buildSection('Financials'),
               _buildSettingTile(
                 icon: Icons.account_balance_wallet_outlined,
@@ -147,6 +155,45 @@ class SettingsScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('App has been reset!')));
             }, 
             child: const Text('FULL RESET', style: TextStyle(color: AppTheme.errorColor))
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNameDialog(BuildContext context, FoodProvider provider) {
+    final controller = TextEditingController(text: provider.userName == 'User' ? '' : provider.userName);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('What\'s your name?'),
+        content: TextField(
+          controller: controller,
+          textCapitalization: TextCapitalization.words,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: 'Enter your name',
+            prefixIcon: const Icon(Icons.person_outline_rounded),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+          ElevatedButton(
+            onPressed: () {
+              final name = controller.text.trim();
+              if (name.isNotEmpty) {
+                provider.updateUserName(name);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hey $name! 👋')));
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('SAVE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

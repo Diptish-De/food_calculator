@@ -145,7 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
                                 onPressed: _showAccountSummary,
                               ),
-                              Text('Food Tracker', style: AppTheme.lightTheme.appBarTheme.titleTextStyle),
+                              Column(
+                                children: [
+                                  Text('Hey ${provider.userName}! 👋', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
+                                  const Text('Track your meals', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                                ],
+                              ),
                               Stack(
                                 children: [
                                   IconButton(

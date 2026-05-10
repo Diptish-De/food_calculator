@@ -5,6 +5,7 @@ import '../models/meal_session.dart';
 import '../services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodProvider with ChangeNotifier {
   final DBHelper _dbHelper = DBHelper();
@@ -20,6 +21,7 @@ class FoodProvider with ChangeNotifier {
   double _monthTotal = 0;
   double _dueTotal = 0;
   double _monthlyBudget = 3000; // Default budget
+  String _userName = 'User';
 
   DateTime _selectedLoggingDate = DateTime.now();
 
@@ -33,6 +35,7 @@ class FoodProvider with ChangeNotifier {
   double get dueTotal => _dueTotal;
   double get monthlyBudget => _monthlyBudget;
   double get budgetRemaining => _monthlyBudget - _monthTotal;
+  String get userName => _userName;
 
   double get cartTotal {
     double total = 0;
@@ -50,6 +53,10 @@ class FoodProvider with ChangeNotifier {
   }
 
   Future<void> loadInitialData() async {
+    // Load saved user name
+    final prefs = await SharedPreferences.getInstance();
+    _userName = prefs.getString('user_name') ?? 'User';
+
     if (kIsWeb) {
       // Mock data for Web preview
       _foodItems = [
@@ -216,6 +223,13 @@ class FoodProvider with ChangeNotifier {
 
   void updateBudget(double amount) {
     _monthlyBudget = amount;
+    notifyListeners();
+  }
+
+  Future<void> updateUserName(String name) async {
+    _userName = name;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
     notifyListeners();
   }
 
