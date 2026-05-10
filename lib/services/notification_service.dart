@@ -19,7 +19,7 @@ class NotificationService {
     const settings = InitializationSettings(android: androidSettings);
 
     await _notifications.initialize(
-      initializationSettings: settings,
+      settings: settings,
     );
 
     // Request Android 13+ notification permission
