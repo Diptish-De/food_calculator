@@ -83,14 +83,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 _buildStatItem('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
                                 _buildStatItem('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: provider.dueTotal > 0),
-                                GestureDetector(
+                                _buildStatItem(
+                                  'Budget', 
+                                  '₹${provider.budgetRemaining.toInt()}', 
+                                  'Left', 
+                                  isWarning: provider.budgetRemaining < 500,
                                   onTap: () => _showBudgetDialog(context, provider),
-                                  child: _buildStatItem(
-                                    'Budget', 
-                                    '₹${provider.budgetRemaining.toInt()}', 
-                                    'Left', 
-                                    isWarning: provider.budgetRemaining < 500
-                                  ),
                                 ),
                               ],
                             ),
@@ -389,17 +387,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, String sub, {bool isWarning = false}) {
+  Widget _buildStatItem(String label, String value, String sub, {bool isWarning = false, VoidCallback? onTap}) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-          const SizedBox(height: 6),
-          Text(value, style: TextStyle(color: isWarning ? AppTheme.warningColor : Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 2),
-          Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 9, fontWeight: FontWeight.w500)),
-        ],
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+            const SizedBox(height: 6),
+            Text(value, style: TextStyle(color: isWarning ? AppTheme.warningColor : Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 2),
+            Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 9, fontWeight: FontWeight.w500)),
+          ],
+        ),
       ),
     );
   }
