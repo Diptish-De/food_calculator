@@ -34,8 +34,7 @@ class DBHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         category TEXT NOT NULL,
-        price REAL NOT NULL,
-        icon TEXT NOT NULL
+        price REAL NOT NULL
       )
     ''');
 
@@ -68,18 +67,18 @@ class DBHelper {
 
   Future<void> _insertInitialData(Database db) async {
     List<FoodItem> initialItems = [
-      FoodItem(name: 'Full Bhat', category: 'Main', price: 20.0, icon: 'rice'),
-      FoodItem(name: 'Half Bhat', category: 'Main', price: 10.0, icon: 'rice'),
-      FoodItem(name: 'Ruti', category: 'Main', price: 4.0, icon: 'bread'),
-      FoodItem(name: 'Dal', category: 'Curry', price: 5.0, icon: 'vegetable'),
-      FoodItem(name: 'Sabji', category: 'Curry', price: 5.0, icon: 'vegetable'),
-      FoodItem(name: 'Dim Bhaja', category: 'Egg', price: 12.0, icon: 'egg'),
-      FoodItem(name: 'Dim Seddho', category: 'Egg', price: 10.0, icon: 'egg'),
-      FoodItem(name: 'Dim Curry', category: 'Egg', price: 15.0, icon: 'egg'),
-      FoodItem(name: 'Mach', category: 'Non-Veg', price: 30.0, icon: 'fish'),
-      FoodItem(name: 'Alu Bhate', category: 'Side', price: 5.0, icon: 'potato'),
-      FoodItem(name: 'Alu Dom', category: 'Curry', price: 10.0, icon: 'potato'),
-      FoodItem(name: 'Soyabean', category: 'Curry', price: 7.0, icon: 'vegetable'),
+      FoodItem(name: 'Full Bhat', category: 'Main', price: 20.0),
+      FoodItem(name: 'Half Bhat', category: 'Main', price: 10.0),
+      FoodItem(name: 'Ruti', category: 'Main', price: 4.0),
+      FoodItem(name: 'Dal', category: 'Curry', price: 5.0),
+      FoodItem(name: 'Sabji', category: 'Curry', price: 5.0),
+      FoodItem(name: 'Dim Bhaja', category: 'Egg', price: 12.0),
+      FoodItem(name: 'Dim Seddho', category: 'Egg', price: 10.0),
+      FoodItem(name: 'Dim Curry', category: 'Egg', price: 15.0),
+      FoodItem(name: 'Mach', category: 'Non-Veg', price: 30.0),
+      FoodItem(name: 'Alu Bhate', category: 'Side', price: 5.0),
+      FoodItem(name: 'Alu Dom', category: 'Curry', price: 10.0),
+      FoodItem(name: 'Soyabean', category: 'Curry', price: 7.0),
     ];
 
     for (var item in initialItems) {
