@@ -330,8 +330,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pop(context);
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
-            child: const Text('SET BUDGET'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('SET BUDGET', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -480,9 +483,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bill copied to clipboard! Paste it in WhatsApp.')));
             },
-            icon: const Icon(Icons.copy_rounded),
-            label: const Text('COPY & SEND'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+            icon: const Icon(Icons.copy_rounded, color: Colors.white),
+            label: const Text('COPY & SEND', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       ),
