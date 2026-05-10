@@ -5,6 +5,7 @@ class MealSession {
   final String? note;
   final bool isPaid;
   final String? itemSummary;
+  final DateTime? paidOn;
 
   MealSession({
     this.id,
@@ -13,6 +14,7 @@ class MealSession {
     this.note,
     this.isPaid = false,
     this.itemSummary,
+    this.paidOn,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class MealSession {
       'total_cost': totalCost,
       'note': note,
       'is_paid': isPaid ? 1 : 0,
+      'paid_on': paidOn?.toIso8601String(),
     };
   }
 
@@ -33,6 +36,7 @@ class MealSession {
       note: map['note'],
       isPaid: map['is_paid'] == 1,
       itemSummary: map['item_summary'],
+      paidOn: map['paid_on'] != null ? DateTime.parse(map['paid_on']) : null,
     );
   }
 }

@@ -45,7 +45,8 @@ class DBHelper {
         timestamp TEXT NOT NULL,
         total_cost REAL NOT NULL,
         note TEXT,
-        is_paid INTEGER DEFAULT 0
+        is_paid INTEGER DEFAULT 0,
+        paid_on TEXT
       )
     ''');
 
@@ -158,15 +159,17 @@ class DBHelper {
 
   Future<void> markAllAsPaid() async {
     Database db = await database;
-    await db.update('meal_sessions', {'is_paid': 1}, where: 'is_paid = 0');
+    String now = DateTime.now().toIso8601String();
+    await db.update('meal_sessions', {'is_paid': 1, 'paid_on': now}, where: 'is_paid = 0');
   }
 
   Future<void> markAsPaidUpToDate(DateTime date) async {
     Database db = await database;
     String dateStr = date.toIso8601String();
+    String now = DateTime.now().toIso8601String();
     await db.update(
       'meal_sessions', 
-      {'is_paid': 1}, 
+      {'is_paid': 1, 'paid_on': now}, 
       where: 'is_paid = 0 AND timestamp <= ?', 
       whereArgs: [dateStr]
     );

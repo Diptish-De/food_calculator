@@ -99,6 +99,7 @@ class FoodProvider with ChangeNotifier {
   Future<void> markAsPaidUpToDate(DateTime date) async {
     if (kIsWeb) {
       final dateKey = DateFormat('yyyy-MM-dd').format(date);
+      final now = DateTime.now();
       for (int i = 0; i < _sessions.length; i++) {
         final sessionDateKey = DateFormat('yyyy-MM-dd').format(_sessions[i].timestamp);
         if (sessionDateKey.compareTo(dateKey) <= 0) {
@@ -109,6 +110,7 @@ class FoodProvider with ChangeNotifier {
             isPaid: true,
             itemSummary: _sessions[i].itemSummary,
             note: _sessions[i].note,
+            paidOn: now,
           );
         }
       }

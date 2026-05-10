@@ -40,9 +40,36 @@ class HistoryScreen extends StatelessWidget {
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: sortedDates.length,
+            itemCount: sortedDates.length + 1,
             itemBuilder: (context, index) {
-              String dateKey = sortedDates[index];
+              if (index == 0) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 24),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.headerGradient,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(color: AppTheme.primaryColor.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('TOTAL DUES', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          Text('Unpaid till today', style: TextStyle(color: Colors.white54, fontSize: 10)),
+                        ],
+                      ),
+                      const Spacer(),
+                      Text('₹${provider.dueTotal.toInt()}', style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900)),
+                    ],
+                  ),
+                );
+              }
+
+              String dateKey = sortedDates[index - 1];
               DateTime date = DateTime.parse(dateKey);
               String formattedDate = DateFormat('EEEE, MMM d').format(date);
               double dailyTotal = dailyTotals[dateKey]!;
@@ -147,7 +174,18 @@ class HistoryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('₹${session.totalCost.toInt()}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text(session.isPaid ? 'PAID' : 'UNPAID', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: session.isPaid ? AppTheme.accentColor : AppTheme.errorColor)),
+              Text(
+                session.isPaid 
+                  ? (session.paidOn != null 
+                      ? 'Paid on ${DateFormat('MMM d').format(session.paidOn!)}' 
+                      : 'PAID')
+                  : 'UNPAID', 
+                style: TextStyle(
+                  fontSize: 9, 
+                  fontWeight: FontWeight.w900, 
+                  color: session.isPaid ? AppTheme.accentColor : AppTheme.errorColor
+                )
+              ),
             ],
           ),
         ],
