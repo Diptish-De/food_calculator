@@ -451,8 +451,9 @@ class _HomeScreenState extends State<HomeScreen> {
     double total = 0;
     for (var session in unpaidSessions) {
       final date = "${session.timestamp.day}/${session.timestamp.month}";
-      billText += "• $date: ₹${session.totalAmount.toInt()} (${session.items.map((i) => '${i.quantity}x ${i.foodName}').join(', ')})\n";
-      total += session.totalAmount;
+      final summary = session.itemSummary ?? "Items logged";
+      billText += "• $date: ₹${session.totalCost.toInt()} ($summary)\n";
+      total += session.totalCost;
     }
     
     billText += "--------------------------\n";
