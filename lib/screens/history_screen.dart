@@ -56,8 +56,24 @@ class HistoryScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(formattedDate.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppTheme.textSecondary)),
-                        Text('₹${dailyTotal.toInt()}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.primaryDark)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(formattedDate.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppTheme.textSecondary)),
+                            Text('₹${dailyTotal.toInt()}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.primaryDark)),
+                          ],
+                        ),
+                        if (sessions.any((s) => !s.isPaid))
+                          TextButton(
+                            onPressed: () => _showPaidConfirm(context, provider, date),
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                              foregroundColor: AppTheme.primaryColor,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('PAID', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
                       ],
                     ),
                   ),
@@ -68,6 +84,28 @@ class HistoryScreen extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+
+  void _showPaidConfirm(BuildContext context, FoodProvider provider, DateTime date) {
+    String formattedDate = DateFormat('MMM d').format(date);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear History?'),
+        content: Text('Mark all meals on or before $formattedDate as PAID?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+          ElevatedButton(
+            onPressed: () {
+              provider.markAsPaidUpToDate(date);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+            child: const Text('YES, PAID', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }

@@ -96,6 +96,30 @@ class FoodProvider with ChangeNotifier {
     await loadInitialData();
   }
 
+  Future<void> markAsPaidUpToDate(DateTime date) async {
+    if (kIsWeb) {
+      final dateKey = DateFormat('yyyy-MM-dd').format(date);
+      for (int i = 0; i < _sessions.length; i++) {
+        final sessionDateKey = DateFormat('yyyy-MM-dd').format(_sessions[i].timestamp);
+        if (sessionDateKey.compareTo(dateKey) <= 0) {
+          _sessions[i] = MealSession(
+            id: _sessions[i].id,
+            timestamp: _sessions[i].timestamp,
+            totalCost: _sessions[i].totalCost,
+            isPaid: true,
+            itemSummary: _sessions[i].itemSummary,
+            note: _sessions[i].note,
+          );
+        }
+      }
+      _calculateStats();
+      notifyListeners();
+      return;
+    }
+    await _dbHelper.markAsPaidUpToDate(date);
+    await loadInitialData();
+  }
+
   Future<void> addFoodItem(FoodItem item) async {
     if (kIsWeb) {
       final newItem = FoodItem(
