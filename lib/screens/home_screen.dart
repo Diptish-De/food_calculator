@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
 import '../widgets/glass_container.dart';
 import '../utils/app_theme.dart';
+import 'settings_screen.dart';
 import 'history_screen.dart';
 import 'manage_food_screen.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -427,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                _showPaymentDialog();
             }),
             IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () {
-               Navigator.push(context, MaterialPageRoute(builder: (context) => ManageFoodScreen()));
+               Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
             }),
           ],
         ),

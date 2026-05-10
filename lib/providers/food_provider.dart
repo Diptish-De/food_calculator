@@ -208,6 +208,33 @@ class FoodProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearAllSessions() async {
+    if (kIsWeb) {
+      _sessions.clear();
+      _todayTotal = 0;
+      _monthTotal = 0;
+      _dueTotal = 0;
+    } else {
+      await _dbHelper.deleteAllSessions();
+      await loadInitialData();
+    }
+    notifyListeners();
+  }
+
+  Future<void> fullReset() async {
+    if (kIsWeb) {
+      _sessions.clear();
+      _foodItems.clear();
+      _todayTotal = 0;
+      _monthTotal = 0;
+      _dueTotal = 0;
+    } else {
+      await _dbHelper.fullReset();
+      await loadInitialData();
+    }
+    notifyListeners();
+  }
+
   Future<void> saveSession({String? note}) async {
     if (_cart.isEmpty) return;
     if (kIsWeb) {
