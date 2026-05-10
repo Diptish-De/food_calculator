@@ -53,12 +53,18 @@ class FoodProvider with ChangeNotifier {
     if (kIsWeb) {
       // Mock data for Web preview
       _foodItems = [
-        FoodItem(id: 1, name: 'Ruti', category: 'Main', price: 5.0, icon: 'bread'),
-        FoodItem(id: 2, name: 'Dim Jhol', category: 'Curry', price: 15.0, icon: 'egg'),
-        FoodItem(id: 3, name: 'Alu Dum', category: 'Curry', price: 10.0, icon: 'potato'),
-        FoodItem(id: 4, name: 'Tarkari', category: 'Curry', price: 10.0, icon: 'vegetable'),
-        FoodItem(id: 5, name: 'Cha', category: 'Drink', price: 7.0, icon: 'coffee'),
-        FoodItem(id: 6, name: 'Paratha', category: 'Main', price: 10.0, icon: 'bread'),
+        FoodItem(id: 1, name: 'Full Bhat', category: 'Main', price: 20.0, icon: 'rice'),
+        FoodItem(id: 2, name: 'Half Bhat', category: 'Main', price: 10.0, icon: 'rice'),
+        FoodItem(id: 3, name: 'Ruti', category: 'Main', price: 4.0, icon: 'bread'),
+        FoodItem(id: 4, name: 'Dal', category: 'Curry', price: 5.0, icon: 'vegetable'),
+        FoodItem(id: 5, name: 'Sabji', category: 'Curry', price: 5.0, icon: 'vegetable'),
+        FoodItem(id: 6, name: 'Dim Bhaja', category: 'Egg', price: 12.0, icon: 'egg'),
+        FoodItem(id: 7, name: 'Dim Seddho', category: 'Egg', price: 10.0, icon: 'egg'),
+        FoodItem(id: 8, name: 'Dim Curry', category: 'Egg', price: 15.0, icon: 'egg'),
+        FoodItem(id: 9, name: 'Mach', category: 'Non-Veg', price: 30.0, icon: 'fish'),
+        FoodItem(id: 10, name: 'Alu Bhate', category: 'Side', price: 5.0, icon: 'potato'),
+        FoodItem(id: 11, name: 'Alu Dom', category: 'Curry', price: 10.0, icon: 'potato'),
+        FoodItem(id: 12, name: 'Soyabean', category: 'Curry', price: 7.0, icon: 'vegetable'),
       ];
       notifyListeners();
       return;

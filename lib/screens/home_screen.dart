@@ -215,10 +215,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverGrid(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 0.9,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
+                        crossAxisCount: 4,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
@@ -627,6 +627,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'potato': return Icons.grass_rounded;
       case 'vegetable': return Icons.set_meal_rounded;
       case 'coffee': return Icons.coffee_rounded;
+      case 'rice': return Icons.rice_bowl_rounded;
+      case 'fish': return Icons.phishing_rounded;
       default: return Icons.fastfood_rounded;
     }
   }

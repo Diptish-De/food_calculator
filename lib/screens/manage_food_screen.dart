@@ -17,10 +17,12 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
   String _selectedIcon = 'fastfood';
 
   final List<Map<String, dynamic>> _icons = [
+    {'name': 'rice', 'icon': Icons.rice_bowl_rounded},
     {'name': 'bread', 'icon': Icons.bakery_dining_rounded},
     {'name': 'egg', 'icon': Icons.egg_rounded},
     {'name': 'potato', 'icon': Icons.grass_rounded},
     {'name': 'vegetable', 'icon': Icons.set_meal_rounded},
+    {'name': 'fish', 'icon': Icons.phishing_rounded},
     {'name': 'coffee', 'icon': Icons.coffee_rounded},
     {'name': 'fastfood', 'icon': Icons.fastfood_rounded},
   ];
@@ -213,6 +215,8 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
       case 'potato': return Icons.grass_rounded;
       case 'vegetable': return Icons.set_meal_rounded;
       case 'coffee': return Icons.coffee_rounded;
+      case 'rice': return Icons.rice_bowl_rounded;
+      case 'fish': return Icons.phishing_rounded;
       default: return Icons.fastfood_rounded;
     }
   }
