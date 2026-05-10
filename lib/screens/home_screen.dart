@@ -122,17 +122,38 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(_getIcon(item.icon), size: 24, color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary),
-                                  const SizedBox(height: 4),
-                                  Text(item.name, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
-                                  Text('₹${item.price.toInt()}', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
-                                  if (qty > 0)
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 4),
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(color: AppTheme.primaryColor, borderRadius: BorderRadius.circular(10)),
-                                      child: Text('$qty', style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                                    ).animate().scale(),
+                                  Icon(_getIcon(item.icon), color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary, size: 24),
+                                  const SizedBox(height: 8),
+                                  Text(item.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isSelected ? AppTheme.primaryDark : AppTheme.textPrimary)),
+                                  Text('₹${item.price.toInt()}', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                                  if (isSelected) ...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => provider.removeFromCart(item.id!),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), shape: BoxShape.circle),
+                                            child: const Icon(Icons.remove, size: 14, color: AppTheme.primaryColor),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Text('$qty', style: const TextStyle(fontWeight: FontWeight.w900, color: AppTheme.primaryColor, fontSize: 14)),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => provider.addToCart(item.id!),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(color: AppTheme.primaryColor, shape: BoxShape.circle),
+                                            child: const Icon(Icons.add, size: 14, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
