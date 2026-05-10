@@ -56,9 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.person_outline, color: Colors.white),
+                              IconButton(
+                                icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
+                                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hostel ID: DIPTISH-2024'))),
+                              ),
                               Text('Food Tracker', style: AppTheme.lightTheme.appBarTheme.titleTextStyle),
-                              const Icon(Icons.notifications_none, color: Colors.white),
+                              IconButton(
+                                icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                                onPressed: () {
+                                  final summary = provider.todayTotal > 0 ? 'Today\'s Spend: ₹${provider.todayTotal.toInt()}' : 'No meals logged today yet!';
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(summary)));
+                                },
+                              ),
                             ],
                           ),
                           const SizedBox(height: 30),
@@ -271,10 +280,13 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 4),
               Text('₹${provider.todayTotal.toInt()}', style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w900)),
               const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
-                child: const Text('SEE STATS', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen())),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+                  child: const Text('SEE STATS', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
               ),
             ],
           ),
@@ -305,7 +317,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: const Icon(Icons.book_outlined), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.book_outlined), 
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Menu Guide: Track Daily Ruti & Curry prices easily.'))),
+            ),
             IconButton(icon: const Icon(Icons.history), onPressed: () {
                Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
             }),
