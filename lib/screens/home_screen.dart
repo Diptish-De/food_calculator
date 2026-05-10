@@ -424,8 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
                Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
             }),
             const SizedBox(width: 40), // Space for FAB
-            IconButton(icon: const Icon(Icons.account_balance_wallet_outlined), onPressed: () {
-               _showPaymentDialog();
+            IconButton(icon: const Icon(Icons.receipt_long_outlined), onPressed: () {
+               _generateAndShareBill();
             }),
             IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () {
                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
@@ -436,21 +436,52 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showPaymentDialog() {
+  void _generateAndShareBill() {
+    final provider = context.read<FoodProvider>();
+    final unpaidSessions = provider.sessions.where((s) => !s.isPaid).toList();
+    
+    if (unpaidSessions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No unpaid dues to share!')));
+      return;
+    }
+
+    String billText = "📄 *HOSTEL FOOD BILL*\n";
+    billText += "--------------------------\n";
+    
+    double total = 0;
+    for (var session in unpaidSessions) {
+      final date = "${session.timestamp.day}/${session.timestamp.month}";
+      billText += "• $date: ₹${session.totalAmount.toInt()} (${session.items.map((i) => '${i.quantity}x ${i.foodName}').join(', ')})\n";
+      total += session.totalAmount;
+    }
+    
+    billText += "--------------------------\n";
+    billText += "💰 *TOTAL DUE: ₹${total.toInt()}*\n";
+    billText += "--------------------------\n";
+    billText += "Generated via Food Tracker";
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Dues?'),
-        content: Text('Total due: ₹${context.read<FoodProvider>().dueTotal.toInt()}\nHave you paid the hostel owner?'),
+        title: const Text('Share Unpaid Bill'),
+        content: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+          child: SingleChildScrollView(
+            child: SelectableText(billText, style: const TextStyle(fontFamily: 'monospace', fontSize: 13)),
+          ),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: () {
-              context.read<FoodProvider>().markAsPaid();
+              Clipboard.setData(ClipboardData(text: billText));
               Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bill copied to clipboard! Paste it in WhatsApp.')));
             },
+            icon: const Icon(Icons.copy_rounded),
+            label: const Text('COPY & SEND'),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
-            child: const Text('YES, PAID'),
           ),
         ],
       ),
