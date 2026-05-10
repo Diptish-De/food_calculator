@@ -22,7 +22,92 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<FoodProvider>().loadInitialData());
+    Future.microtask(() async {
+      final provider = context.read<FoodProvider>();
+      await provider.loadInitialData();
+      _checkScheduledReminder(provider);
+    });
+  }
+
+  void _checkScheduledReminder(FoodProvider provider) {
+    final now = DateTime.now();
+    // Monday = 1, Thursday = 4
+    if (now.weekday == DateTime.monday || now.weekday == DateTime.thursday) {
+      if (provider.dueTotal > 0) {
+        // Small delay so the UI is fully built before showing dialog
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (!mounted) return;
+          _showReminderDialog(provider);
+        });
+      }
+    }
+  }
+
+  void _showReminderDialog(FoodProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.warningColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Text('🔔', style: TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Payment Reminder', style: TextStyle(fontSize: 17))),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                children: [
+                  const Text('Unpaid Dues', style: TextStyle(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text('₹${provider.dueTotal.toInt()}', style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: AppTheme.primaryDark)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'You have pending food bills. Consider clearing your dues with the hostel owner today.',
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('LATER'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              _generateAndShareBill();
+            },
+            icon: const Icon(Icons.receipt_long_outlined, size: 16, color: Colors.white),
+            label: const Text('SHARE BILL', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _vibrate() {
@@ -61,15 +146,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPressed: _showAccountSummary,
                               ),
                               Text('Food Tracker', style: AppTheme.lightTheme.appBarTheme.titleTextStyle),
-                              IconButton(
-                                icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-                                onPressed: () {
-                                  final hasDues = provider.dueTotal > 0;
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    backgroundColor: hasDues ? AppTheme.errorColor : AppTheme.primaryColor,
-                                    content: Text(hasDues ? '⚠️ Reminder: You have ₹${provider.dueTotal.toInt()} in unpaid dues!' : '🎉 All clear! You have no unpaid dues.'),
-                                  ));
-                                },
+                              Stack(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                                    onPressed: () {
+                                      if (provider.dueTotal > 0) {
+                                        _showReminderDialog(provider);
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                          backgroundColor: AppTheme.primaryColor,
+                                          content: Text('🎉 All clear! You have no unpaid dues.'),
+                                        ));
+                                      }
+                                    },
+                                  ),
+                                  if (provider.dueTotal > 0)
+                                    Positioned(
+                                      right: 8,
+                                      top: 8,
+                                      child: Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: const BoxDecoration(
+                                          color: AppTheme.errorColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ],
                           ),
