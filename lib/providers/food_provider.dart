@@ -62,16 +62,16 @@ class FoodProvider with ChangeNotifier {
       _foodItems = [
         FoodItem(id: 1, name: 'Full Bhat', category: 'Main', price: 20.0),
         FoodItem(id: 2, name: 'Half Bhat', category: 'Main', price: 10.0),
-        FoodItem(id: 3, name: 'Ruti', category: 'Main', price: 4.0),
-        FoodItem(id: 4, name: 'Dal', category: 'Curry', price: 5.0),
-        FoodItem(id: 5, name: 'Sabji', category: 'Curry', price: 5.0),
-        FoodItem(id: 6, name: 'Dim Bhaja', category: 'Egg', price: 12.0),
-        FoodItem(id: 7, name: 'Dim Seddho', category: 'Egg', price: 10.0),
-        FoodItem(id: 8, name: 'Dim Curry', category: 'Egg', price: 15.0),
-        FoodItem(id: 9, name: 'Mach', category: 'Non-Veg', price: 30.0),
-        FoodItem(id: 10, name: 'Alu Bhate', category: 'Side', price: 5.0),
-        FoodItem(id: 11, name: 'Alu Dom', category: 'Curry', price: 10.0),
-        FoodItem(id: 12, name: 'Soyabean', category: 'Curry', price: 7.0),
+        FoodItem(id: 3, name: 'Dim Bhaja', category: 'Egg', price: 12.0),
+        FoodItem(id: 4, name: 'Dim Seddho', category: 'Egg', price: 10.0),
+        FoodItem(id: 5, name: 'Dim Curry', category: 'Egg', price: 15.0),
+        FoodItem(id: 6, name: 'Dal', category: 'Curry', price: 5.0),
+        FoodItem(id: 7, name: 'Sabji', category: 'Curry', price: 5.0),
+        FoodItem(id: 8, name: 'Mach', category: 'Non-Veg', price: 30.0),
+        FoodItem(id: 9, name: 'Alu Bhate', category: 'Side', price: 5.0),
+        FoodItem(id: 10, name: 'Ruti', category: 'Main', price: 4.0),
+        FoodItem(id: 11, name: 'Soyabean', category: 'Curry', price: 7.0),
+        FoodItem(id: 12, name: 'Alu Dom', category: 'Curry', price: 10.0),
       ];
       notifyListeners();
       return;

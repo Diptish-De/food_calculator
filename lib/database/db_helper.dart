@@ -69,16 +69,16 @@ class DBHelper {
     List<FoodItem> initialItems = [
       FoodItem(name: 'Full Bhat', category: 'Main', price: 20.0),
       FoodItem(name: 'Half Bhat', category: 'Main', price: 10.0),
-      FoodItem(name: 'Ruti', category: 'Main', price: 4.0),
-      FoodItem(name: 'Dal', category: 'Curry', price: 5.0),
-      FoodItem(name: 'Sabji', category: 'Curry', price: 5.0),
       FoodItem(name: 'Dim Bhaja', category: 'Egg', price: 12.0),
       FoodItem(name: 'Dim Seddho', category: 'Egg', price: 10.0),
       FoodItem(name: 'Dim Curry', category: 'Egg', price: 15.0),
+      FoodItem(name: 'Dal', category: 'Curry', price: 5.0),
+      FoodItem(name: 'Sabji', category: 'Curry', price: 5.0),
       FoodItem(name: 'Mach', category: 'Non-Veg', price: 30.0),
       FoodItem(name: 'Alu Bhate', category: 'Side', price: 5.0),
-      FoodItem(name: 'Alu Dom', category: 'Curry', price: 10.0),
+      FoodItem(name: 'Ruti', category: 'Main', price: 4.0),
       FoodItem(name: 'Soyabean', category: 'Curry', price: 7.0),
+      FoodItem(name: 'Alu Dom', category: 'Curry', price: 10.0),
     ];
 
     for (var item in initialItems) {
