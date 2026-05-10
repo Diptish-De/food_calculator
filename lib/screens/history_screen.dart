@@ -4,6 +4,7 @@ import '../providers/food_provider.dart';
 import '../utils/app_theme.dart';
 import '../models/meal_session.dart';
 import 'package:intl/intl.dart';
+import 'monthly_breakdown_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -15,6 +16,13 @@ class HistoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Meal History', style: TextStyle(color: AppTheme.textPrimary)),
         iconTheme: const IconThemeData(color: AppTheme.textPrimary),
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MonthlyBreakdownScreen())),
+            icon: const Icon(Icons.calendar_view_month_rounded, size: 18, color: AppTheme.primaryDark),
+            label: const Text('Monthly', style: TextStyle(color: AppTheme.primaryDark, fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
       ),
       body: Consumer<FoodProvider>(
         builder: (context, provider, child) {
