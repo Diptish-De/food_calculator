@@ -77,8 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildCircularProgress(provider),
                           const SizedBox(height: 30),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 _buildStatItem('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
                                 _buildStatItem('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: provider.dueTotal > 0),
