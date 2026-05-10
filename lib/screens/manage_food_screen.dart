@@ -14,7 +14,6 @@ class ManageFoodScreen extends StatefulWidget {
 class _ManageFoodScreenState extends State<ManageFoodScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
-  String _selectedIcon = 'fastfood';
 
 
 
@@ -89,7 +88,6 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                               FoodItem(
                                 name: _nameController.text,
                                 price: double.parse(_priceController.text),
-                                icon: _selectedIcon,
                                 category: 'Custom',
                               ),
                             );
@@ -119,7 +117,6 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
   void _showEditDialog(FoodProvider provider, FoodItem item) {
     final nameCtrl = TextEditingController(text: item.name);
     final priceCtrl = TextEditingController(text: item.price.toInt().toString());
-    String selectedIcon = item.icon;
 
     showDialog(
       context: context,
@@ -162,7 +159,6 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                     id: item.id,
                     name: nameCtrl.text,
                     price: double.parse(priceCtrl.text),
-                    icon: selectedIcon,
                     category: item.category,
                   ));
                   Navigator.pop(context);

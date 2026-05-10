@@ -150,7 +150,6 @@ class FoodProvider with ChangeNotifier {
         name: item.name,
         category: item.category,
         price: item.price,
-        icon: item.icon,
       );
       _foodItems.add(newItem);
       notifyListeners();
