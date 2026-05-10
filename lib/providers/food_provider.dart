@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../database/db_helper.dart';
 import '../models/food_item.dart';
 import '../models/meal_session.dart';
+import '../services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
@@ -70,6 +71,8 @@ class FoodProvider with ChangeNotifier {
     _sessions = sessionData.map((m) => MealSession.fromMap(m)).toList();
     
     _calculateStats();
+    // Schedule/cancel notifications based on dues
+    NotificationService.scheduleWeeklyReminders(_dueTotal);
     notifyListeners();
   }
 
@@ -97,6 +100,8 @@ class FoodProvider with ChangeNotifier {
   Future<void> markAsPaid() async {
     await _dbHelper.markAllAsPaid();
     await loadInitialData();
+    // Dues cleared — cancel reminders
+    NotificationService.cancelAll();
   }
 
   Future<void> markAsPaidUpToDate(DateTime date) async {

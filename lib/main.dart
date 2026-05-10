@@ -3,17 +3,21 @@ import 'package:provider/provider.dart';
 import 'providers/food_provider.dart';
 import 'utils/app_theme.dart';
 import 'screens/home_screen.dart';
+import 'services/notification_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
+  // Initialize notifications (only works on Android/iOS, skips on Web)
+  await NotificationService.initialize();
   
   runApp(const FoodCalculatorApp());
 }
