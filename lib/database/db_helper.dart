@@ -181,11 +181,13 @@ class DBHelper {
 
   Future<void> deleteAllSessions() async {
     final db = await database;
+    await db.delete('session_items');
     await db.delete('meal_sessions');
   }
 
   Future<void> fullReset() async {
     final db = await database;
+    await db.delete('session_items');
     await db.delete('meal_sessions');
     await db.delete('food_items');
   }

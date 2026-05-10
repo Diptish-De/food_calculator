@@ -32,7 +32,7 @@ class MealSession {
     return MealSession(
       id: map['id'],
       timestamp: DateTime.parse(map['timestamp']),
-      totalCost: map['total_cost'],
+      totalCost: (map['total_cost'] as num).toDouble(),
       note: map['note'],
       isPaid: map['is_paid'] == 1,
       itemSummary: map['item_summary'],

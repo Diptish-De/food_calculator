@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/food_provider.dart';
-import '../widgets/glass_container.dart';
+// glass_container available if needed
 import '../utils/app_theme.dart';
 import 'settings_screen.dart';
 import 'history_screen.dart';
@@ -18,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
 
   @override
   void initState() {

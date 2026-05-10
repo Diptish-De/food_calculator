@@ -211,14 +211,15 @@ class FoodProvider with ChangeNotifier {
   Map<String, int> getTopItems() {
     final Map<String, int> counts = {};
     for (var session in _sessions) {
-      if (session.itemSummary != null) {
-        // Simple parsing of itemSummary "2x Ruti, 1x Curry"
+      if (session.itemSummary != null && session.itemSummary!.isNotEmpty) {
+        // DB format: "Ruti x2, Dim Jhol x1" — name first, then xQty
         final parts = session.itemSummary!.split(', ');
         for (var part in parts) {
-          final match = RegExp(r'(\d+)x (.+)').firstMatch(part);
+          final trimmed = part.trim();
+          final match = RegExp(r'(.+?)\s*x(\d+)').firstMatch(trimmed);
           if (match != null) {
-            final qty = int.parse(match.group(1)!);
-            final name = match.group(2)!;
+            final name = match.group(1)!.trim();
+            final qty = int.parse(match.group(2)!);
             counts[name] = (counts[name] ?? 0) + qty;
           }
         }
