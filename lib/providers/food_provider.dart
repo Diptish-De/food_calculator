@@ -18,6 +18,7 @@ class FoodProvider with ChangeNotifier {
   double _todayTotal = 0;
   double _monthTotal = 0;
   double _dueTotal = 0;
+  double _monthlyBudget = 3000; // Default budget
 
   DateTime _selectedLoggingDate = DateTime.now();
 
@@ -29,6 +30,8 @@ class FoodProvider with ChangeNotifier {
   double get todayTotal => _todayTotal;
   double get monthTotal => _monthTotal;
   double get dueTotal => _dueTotal;
+  double get monthlyBudget => _monthlyBudget;
+  double get budgetRemaining => _monthlyBudget - _monthTotal;
 
   double get cartTotal {
     double total = 0;
@@ -197,6 +200,11 @@ class FoodProvider with ChangeNotifier {
 
   void setLoggingDate(DateTime date) {
     _selectedLoggingDate = date;
+    notifyListeners();
+  }
+
+  void updateBudget(double amount) {
+    _monthlyBudget = amount;
     notifyListeners();
   }
 

@@ -75,9 +75,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 30),
                           Row(
                             children: [
-                              _buildMiniStat('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
-                              _buildMiniStat('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: true),
-                              _buildMiniStat('Saved', '₹120', 'Target'),
+                              _buildStatItem('Month', '₹${provider.monthTotal.toInt()}', 'Total'),
+                              _buildStatItem('Due', '₹${provider.dueTotal.toInt()}', 'Unpaid', isWarning: true),
+                              GestureDetector(
+                                onTap: () => _showBudgetDialog(context, provider),
+                                child: _buildStatItem(
+                                  'Budget', 
+                                  '₹${provider.budgetRemaining.toInt()}', 
+                                  'Left', 
+                                  isWarning: provider.budgetRemaining < 500
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -295,7 +303,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMiniStat(String label, String value, String sub, {bool isWarning = false}) {
+  void _showBudgetDialog(BuildContext context, FoodProvider provider) {
+    final controller = TextEditingController(text: provider.monthlyBudget.toInt().toString());
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Monthly Budget'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Set Budget Limit (₹)', border: OutlineInputBorder()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+          ElevatedButton(
+            onPressed: () {
+              final val = double.tryParse(controller.text);
+              if (val != null) {
+                provider.updateBudget(val);
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+            child: const Text('SET BUDGET'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, String sub, {bool isWarning = false}) {
     return Expanded(
       child: Column(
         children: [
