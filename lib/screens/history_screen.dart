@@ -79,33 +79,28 @@ class HistoryScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(formattedDate.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppTheme.textSecondary)),
-                            Text('₹${dailyTotal.toInt()}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.primaryDark)),
-                          ],
-                        ),
+                        Text(formattedDate, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textSecondary)),
                         if (sessions.any((s) => !s.isPaid))
-                          TextButton(
-                            onPressed: () => _showPaidConfirm(context, provider, date),
-                            style: TextButton.styleFrom(
-                              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                              foregroundColor: AppTheme.primaryColor,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          GestureDetector(
+                            onTap: () => _showPaidConfirm(context, provider, date),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text('PAID', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
                             ),
-                            child: const Text('PAID', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                           ),
                       ],
                     ),
                   ),
-                  ...sessions.map((session) => _buildSessionCard(session)),
-                  const SizedBox(height: 16),
+                  ...sessions.map((session) => _buildCompactSessionCard(session)),
+                  const SizedBox(height: 4),
                 ],
               );
             },
@@ -137,59 +132,49 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionCard(MealSession session) {
+  Widget _buildCompactSessionCard(MealSession session) {
     String timeStr = DateFormat('h:mm a').format(session.timestamp);
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black.withOpacity(0.03)),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: AppTheme.primaryColor.withOpacity(0.1), shape: BoxShape.circle),
-            child: const Icon(Icons.restaurant_rounded, size: 18, color: AppTheme.primaryColor),
-          ),
-          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(session.itemSummary ?? 'Meal logged at $timeStr', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                if (session.note != null && session.note!.isNotEmpty)
-                  Text(session.note!, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-                if (session.itemSummary != null)
-                   Text('at $timeStr', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+                Text(
+                  session.itemSummary ?? 'Meal logged', 
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  session.isPaid 
+                    ? (session.paidOn != null ? 'Paid on ${DateFormat('MMM d').format(session.paidOn!)}' : 'PAID')
+                    : 'UNPAID • at $timeStr',
+                  style: TextStyle(
+                    fontSize: 10, 
+                    color: session.isPaid ? AppTheme.primaryColor : AppTheme.errorColor,
+                    fontWeight: FontWeight.w500
+                  ),
+                ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text('₹${session.totalCost.toInt()}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text(
-                session.isPaid 
-                  ? (session.paidOn != null 
-                      ? 'Paid on ${DateFormat('MMM d').format(session.paidOn!)}' 
-                      : 'PAID')
-                  : 'UNPAID', 
-                style: TextStyle(
-                  fontSize: 9, 
-                  fontWeight: FontWeight.w900, 
-                  color: session.isPaid ? AppTheme.accentColor : AppTheme.errorColor
-                )
-              ),
-            ],
+          Text(
+            '₹${session.totalCost.toInt()}', 
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppTheme.primaryDark)
           ),
         ],
       ),
     );
   }
+}
 }
