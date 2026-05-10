@@ -208,6 +208,29 @@ class FoodProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Map<String, int> getTopItems() {
+    final Map<String, int> counts = {};
+    for (var session in _sessions) {
+      if (session.itemSummary != null) {
+        // Simple parsing of itemSummary "2x Ruti, 1x Curry"
+        final parts = session.itemSummary!.split(', ');
+        for (var part in parts) {
+          final match = RegExp(r'(\d+)x (.+)').firstMatch(part);
+          if (match != null) {
+            final qty = int.parse(match.group(1)!);
+            final name = match.group(2)!;
+            counts[name] = (counts[name] ?? 0) + qty;
+          }
+        }
+      }
+    }
+    // Sort and take top 3
+    final sorted = counts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    
+    return Map.fromEntries(sorted.take(3));
+  }
+
   Future<void> clearAllSessions() async {
     if (kIsWeb) {
       _sessions.clear();

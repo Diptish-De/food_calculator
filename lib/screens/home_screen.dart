@@ -365,12 +365,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showPopularMeals() {
     final provider = context.read<FoodProvider>();
+    final topItems = provider.getTopItems();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Your Favorites'),
-        content: const Text('Coming Soon: A list of your most logged food items to help you track your diet habits!'),
+        title: Row(
+          children: [
+            Icon(Icons.bar_chart_rounded, color: AppTheme.primaryColor),
+            const SizedBox(width: 10),
+            const Text('Your Favorites'),
+          ],
+        ),
+        content: topItems.isEmpty 
+          ? const Text('Log some meals first to see your favorites!')
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: topItems.entries.map((e) => ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                  child: Text('${topItems.keys.toList().indexOf(e.key) + 1}', 
+                    style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
+                ),
+                title: Text(e.key, style: const TextStyle(fontWeight: FontWeight.bold)),
+                trailing: Text('${e.value} times', style: const TextStyle(color: AppTheme.textSecondary)),
+              )).toList(),
+            ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('COOL')),
         ],
